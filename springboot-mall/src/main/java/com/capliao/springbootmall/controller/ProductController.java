@@ -1,5 +1,7 @@
 package com.capliao.springbootmall.controller;
 
+import com.capliao.springbootmall.constant.ProductCategory;
+import com.capliao.springbootmall.dto.ProductQueryParams;
 import com.capliao.springbootmall.dto.ProductRequest;
 import com.capliao.springbootmall.model.Product;
 import com.capliao.springbootmall.service.ProductService;
@@ -18,8 +20,16 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(){
-        List<Product> productList = productService.getProducts();
+    public ResponseEntity<List<Product>> getProducts(
+            @RequestParam(required = false) ProductCategory category,
+            @RequestParam(required = false) String search
+            ){
+
+        ProductQueryParams productQueryParams = new ProductQueryParams();
+        productQueryParams.setProductCategory(category);
+        productQueryParams.setSearch(search);
+
+        List<Product> productList = productService.getProducts(productQueryParams);
 
         return ResponseEntity.status(HttpStatus.OK).body(productList);
     }

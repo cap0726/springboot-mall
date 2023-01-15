@@ -1,6 +1,6 @@
 package com.capliao.springbootmall.service;
 
-import com.capliao.springbootmall.dao.ProductDao;
+import com.capliao.springbootmall.dto.ProductQueryParams;
 import com.capliao.springbootmall.dto.ProductRequest;
 import com.capliao.springbootmall.model.Product;
 
@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ProductService {
 
-    List<Product> getProducts();
+    List<Product> getProducts(ProductQueryParams productQueryParams);
 
     Product getProductById(Integer productId);
 

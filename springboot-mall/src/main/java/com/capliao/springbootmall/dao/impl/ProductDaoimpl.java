@@ -1,13 +1,13 @@
 package com.capliao.springbootmall.dao.impl;
 
 import com.capliao.springbootmall.dao.ProductDao;
+import com.capliao.springbootmall.dto.ProductQueryParams;
 import com.capliao.springbootmall.dto.ProductRequest;
 import com.capliao.springbootmall.model.Product;
 import com.capliao.springbootmall.rowmapper.ProductRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class ProductDaoimpl implements ProductDao {
@@ -24,12 +23,21 @@ public class ProductDaoimpl implements ProductDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public List<Product> getProducts() {
+    public List<Product> getProducts(ProductQueryParams productQueryParams) {
         String sql = "SELECT product_id,product_name, category, " +
                      "image_url, price, stock, description, created_date, " +
-                     "last_modified_date FROM product" ;
+                     "last_modified_date FROM product WHERE 1+1" ;
 
         HashMap<String , Object> map = new HashMap<>();
+
+        if(productQueryParams.getProductCategory() != null){
+            sql = sql + " AND category = :category";
+            map.put("category" , productQueryParams.getProductCategory().name());
+        }
+        if(productQueryParams.getSearch() != null){
+            sql = sql + " AND product_name LIKE :productName";
+            map.put("productName" , '%' + productQueryParams.getSearch() + '%');
+        }
 
         List<Product> productList = namedParameterJdbcTemplate.query(sql , map , new ProductRowMapper());
         return productList;
