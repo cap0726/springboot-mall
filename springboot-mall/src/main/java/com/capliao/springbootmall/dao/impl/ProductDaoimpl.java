@@ -23,6 +23,18 @@ public class ProductDaoimpl implements ProductDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
+    public Integer countProducts(ProductQueryParams productQueryParams) {
+        String sql = " SELECT COUNT(*) FROM product WHERE 1+1";
+
+        HashMap<String , Object> map = new HashMap<>();
+
+        sql = addFilteringSql(sql , map , productQueryParams);
+
+        Integer total = namedParameterJdbcTemplate.queryForObject(sql , map , Integer.class);
+        return total;
+    }
+
+    @Override
     public List<Product> getProducts(ProductQueryParams productQueryParams) {
         //查詢條件
         String sql = "SELECT product_id,product_name, category, " +
@@ -31,14 +43,7 @@ public class ProductDaoimpl implements ProductDao {
 
         HashMap<String , Object> map = new HashMap<>();
 
-        if(productQueryParams.getProductCategory() != null){
-            sql = sql + " AND category = :category";
-            map.put("category" , productQueryParams.getProductCategory().name());
-        }
-        if(productQueryParams.getSearch() != null){
-            sql = sql + " AND product_name LIKE :productName";
-            map.put("productName" , '%' + productQueryParams.getSearch() + '%');
-        }
+        sql = addFilteringSql(sql , map , productQueryParams);
 
         //排序
         sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " +  productQueryParams.getSort();
@@ -128,4 +133,18 @@ public class ProductDaoimpl implements ProductDao {
 
         namedParameterJdbcTemplate.update(sql , map);
     }
+
+    private String addFilteringSql(String sql , HashMap<String , Object> map , ProductQueryParams productQueryParams ){
+        if(productQueryParams.getProductCategory() != null){
+            sql = sql + " AND category = :category";
+            map.put("category" , productQueryParams.getProductCategory().name());
+        }
+        if(productQueryParams.getSearch() != null){
+            sql = sql + " AND product_name LIKE :productName";
+            map.put("productName" , '%' + productQueryParams.getSearch() + '%');
+        }
+        return sql;
+    }
+
+
 }
