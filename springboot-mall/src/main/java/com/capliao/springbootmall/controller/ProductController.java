@@ -49,12 +49,12 @@ public class ProductController {
 
         List<Product> productList = productService.getProducts(productQueryParams);
 
-        Integer totle = productService.countProducts(productQueryParams);
+        Integer total = productService.countProducts(productQueryParams);
 
         Page<Product> page = new Page<>();
         page.setLimit(limit);
         page.setOffset(offset);
-        page.setTotal(totle);
+        page.setTotal(total);
         page.setResult(productList);
 
         return ResponseEntity.status(HttpStatus.OK).body(page);
