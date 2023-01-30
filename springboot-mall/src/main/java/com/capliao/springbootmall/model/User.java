@@ -1,5 +1,7 @@
 package com.capliao.springbootmall.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 
 public class User {
@@ -8,6 +10,8 @@ public class User {
 
     private String email;
 
+
+    @JsonIgnore
     private String password;
 
     private Date createdDate;

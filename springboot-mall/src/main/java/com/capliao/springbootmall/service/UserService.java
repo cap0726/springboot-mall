@@ -1,5 +1,6 @@
 package com.capliao.springbootmall.service;
 
+import com.capliao.springbootmall.dto.UserLoginRequest;
 import com.capliao.springbootmall.dto.UserRegisterRequest;
 import com.capliao.springbootmall.model.User;
 import org.springframework.stereotype.Component;
@@ -11,5 +12,7 @@ public interface UserService {
 
 
     User getUserById(Integer userId);
+
+    User login(UserLoginRequest userLoginRequest);
 
 }
