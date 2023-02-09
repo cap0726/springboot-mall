@@ -3,15 +3,22 @@ package com.capliao.springbootmall.service.impl;
 import com.capliao.springbootmall.dao.OrderDao;
 import com.capliao.springbootmall.dao.ProductDao;
 
+import com.capliao.springbootmall.dao.UserDao;
 import com.capliao.springbootmall.dto.BuyItems;
 import com.capliao.springbootmall.dto.CreateOrderRequest;
 import com.capliao.springbootmall.model.Order;
 import com.capliao.springbootmall.model.OrderItem;
 import com.capliao.springbootmall.model.Product;
+import com.capliao.springbootmall.model.User;
 import com.capliao.springbootmall.service.OrderService;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +31,11 @@ public class OrderServiceimpl implements OrderService {
 
     @Autowired
     private ProductDao productDao;
+
+    @Autowired
+    private UserDao userDao;
+
+    private final static Logger log = LoggerFactory.getLogger(OrderServiceimpl.class);
 
     @Override
     public Order getOrderByOrderId(Integer orderId) {
@@ -39,12 +51,30 @@ public class OrderServiceimpl implements OrderService {
     @Transactional
     @Override
     public Integer createOrder(Integer userId, CreateOrderRequest createOrderRequest) {
+        //判斷User是否存在
+        User user = userDao.getUserById(userId);
+        if(user == null){
+            log.warn("此User ID {} 不存在!!" , userId);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
         int totalAmount = 0;
         List<OrderItem> orderItemList = new ArrayList<>();
 
 
         for(BuyItems buyItems : createOrderRequest.getBuyItemList()){
             Product product = productDao.getProductById(buyItems.getProductId());
+
+            //判斷商品是否存在和庫存是否足夠
+            if(product == null){
+                log.warn("此商品 {} 不存在!!" , product.getProductName());
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            }else if(product.getStock() < buyItems.getQuantity()){
+                log.warn("此商品庫存不足!!");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            }
+
+            productDao.updateStock(buyItems.getProductId() , product.getStock() - buyItems.getQuantity());
 
             //計算總價錢
             int amount = product.getPrice() * buyItems.getQuantity();

@@ -39,7 +39,7 @@ public class OrderDaoimpl implements OrderDao {
         namedParameterJdbcTemplate.update(sql , new MapSqlParameterSource(map),keyHolder);
 
         int orderId = keyHolder.getKey().intValue();
-        System.out.println(orderId);
+
         return orderId;
     }
 
