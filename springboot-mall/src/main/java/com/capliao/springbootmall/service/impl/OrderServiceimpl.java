@@ -6,6 +6,7 @@ import com.capliao.springbootmall.dao.ProductDao;
 import com.capliao.springbootmall.dao.UserDao;
 import com.capliao.springbootmall.dto.BuyItems;
 import com.capliao.springbootmall.dto.CreateOrderRequest;
+import com.capliao.springbootmall.dto.OrderQueryParams;
 import com.capliao.springbootmall.model.Order;
 import com.capliao.springbootmall.model.OrderItem;
 import com.capliao.springbootmall.model.Product;
@@ -93,5 +94,23 @@ public class OrderServiceimpl implements OrderService {
         orderDao.createOrderItems(orderId , orderItemList);
 
         return orderId;
+    }
+
+    @Override
+    public Integer countOrder(OrderQueryParams orderQueryParams) {
+        return orderDao.countOrder(orderQueryParams);
+    }
+
+    @Override
+    public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+
+        List<Order> orderList = orderDao.getOrders(orderQueryParams);
+
+        for(Order order : orderList){
+            List<OrderItem> orderItemList = orderDao.getOrderItemByOrderId(order.getOrderID());
+            order.setOrderItemList(orderItemList);
+        }
+
+        return orderList;
     }
 }

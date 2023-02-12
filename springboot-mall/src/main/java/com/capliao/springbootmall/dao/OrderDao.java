@@ -1,5 +1,6 @@
 package com.capliao.springbootmall.dao;
 
+import com.capliao.springbootmall.dto.OrderQueryParams;
 import com.capliao.springbootmall.model.Order;
 import com.capliao.springbootmall.model.OrderItem;
 
@@ -14,5 +15,9 @@ public interface OrderDao {
     Order getOrderByOrderId(Integer orderId);
 
     List<OrderItem> getOrderItemByOrderId(Integer orderId);
+
+    Integer countOrder(OrderQueryParams orderQueryParams);
+
+    List<Order> getOrders(OrderQueryParams orderQueryParams);
 
 }
